@@ -9,4 +9,10 @@
     <ProjectReference Include="..\..\sunamo\sunamo\sunamo.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Reference Include="fmdev.XliffParser">
+      <HintPath>..\..\sunamo\dll\net45\fmdev.XliffParser.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
 </Project>

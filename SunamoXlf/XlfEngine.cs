@@ -7,6 +7,7 @@ using System.Windows.Input;
 using sunamo.Constants;
 using sunamo.Essential;
 using SunamoCode;
+using XliffParser;
 
 /// <summary>
 /// Manage multilanguage strings in *.xlf files 
@@ -68,9 +69,6 @@ public class XlfEngine
     public CollectionWithoutDuplicates<string> cs = null;
 
     #region Add
-    
-
-
 
     public void AddEnglish( string englishText, string key)
     {
@@ -196,7 +194,30 @@ public class XlfEngine
         return false;
     }
 
-   
+    public void MergeWithAnotherXlf(string from, string to, Langs l)
+    {
+        var fileIdAlreadyExistsInXlf = AppData.ci.GetFile(AppFolders.Data, "AlreadyExistsInSunamoXlf_" + l + ".txt");
+        PpkOnDrive ppk = new PpkOnDrive(fileIdAlreadyExistsInXlf);
+
+        var dFrom = new XlfDocument(from);
+        var dTo = new XlfDocument(to);
+
+        var sFrom = XlfResourcesH.GetTransUnits(dFrom);
+        var sTo = XlfResourcesH.GetTransUnits(dTo);
+
+        foreach (var item in sFrom)
+        {
+            if (!sTo.ContainsKey(item.Key))
+            {
+                XmlLocalisationInterchangeFileFormat.Append(string.Empty, item.Value, item.Key, to);
+            }
+            else
+            {
+                var vTo = sTo[item.Key];
+                ppk.Add(item.Key + "|" + item.Value);
+            }
+        }
+    }
     #endregion
 }
 
