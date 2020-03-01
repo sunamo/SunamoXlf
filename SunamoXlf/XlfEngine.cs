@@ -18,7 +18,7 @@ public class XlfEngine
     static Type type = typeof(XlfEngine);
 
     #region Variables
-    public Dictionary<Langs, string> filesWithTranslation = new Dictionary<Langs, string>();
+     Dictionary<Langs, string> filesWithTranslation = new Dictionary<Langs, string>();
     public Langs l = Langs.cs;
     public bool requireUserDecision = false;
     /// <summary>
@@ -39,20 +39,24 @@ public class XlfEngine
     #endregion
 
     #region Init
-    protected XlfEngine()
+    private XlfEngine()
     {
         pathXlfKeys = FS.Combine(DefaultPaths.sunamo, @"sunamo\Constants\XlfKeys.cs");
         basePathXlf = FS.Combine(DefaultPaths.sunamo, "sunamo");
+
+        
     }
 
     /// <summary>
     /// Externally called from many places
     /// </summary>
-    public void InitializeMultilingualResources()
+    public Dictionary<Langs, string> InitializeMultilingualResources()
     {
+        Dictionary<Langs, string> filesWithTranslation = new Dictionary<Langs, string>();
         #region Load strings from MultilingualResources file
         var path = FS.Combine(basePathXlf, "MultilingualResources\\");
-        foreach (var item in FS.GetFiles(path, "*.xlf", System.IO.SearchOption.TopDirectoryOnly))
+        var files = FS.GetFiles(path, "*.xlf", System.IO.SearchOption.TopDirectoryOnly);
+        foreach (var item in files)
         {
             Langs l2 = XmlLocalisationInterchangeFileFormat.GetLangFromFilename(item);
             if (!filesWithTranslation.ContainsKey(l2))
@@ -61,6 +65,8 @@ public class XlfEngine
             }
         }
         #endregion
+        this.filesWithTranslation = filesWithTranslation;
+        return filesWithTranslation;
     }
     #endregion
 
@@ -69,10 +75,23 @@ public class XlfEngine
     public CollectionWithoutDuplicates<string> cs = null;
 
     #region Add
+    public void AddCzech(string englishText, string key)
+    {
+        XmlLocalisationInterchangeFileFormat.Append(string.Empty, englishText, key, GetFile(Langs.cs));
+    }
+
+    public string GetFile(Langs cs)
+    {
+        if (filesWithTranslation.Count == 0)
+        {
+            filesWithTranslation = InitializeMultilingualResources();
+        }
+        return filesWithTranslation[cs];
+    }
 
     public void AddEnglish( string englishText, string key)
     {
-        XmlLocalisationInterchangeFileFormat.Append(string.Empty, englishText, key, filesWithTranslation[Langs.en]);
+        XmlLocalisationInterchangeFileFormat.Append(string.Empty, englishText, key, GetFile(Langs.en));
     }
     #endregion
 
