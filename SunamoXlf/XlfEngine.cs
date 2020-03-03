@@ -139,7 +139,6 @@ public class XlfEngine
     /// Get consts which exists in XlfKeys.cs
     /// </summary>
     /// <param name="first"></param>
-    /// <returns></returns>
     List<string> GetConsts(out int first)
     {
         List<string> lines = null;
@@ -151,7 +150,6 @@ public class XlfEngine
     /// </summary>
     /// <param name="first"></param>
     /// <param name="lines"></param>
-    /// <returns></returns>
     List<string> GetConsts(out int first, out List<string> lines)
     {
         first = -1;
@@ -168,7 +166,6 @@ public class XlfEngine
     /// return code for getting from RLData.en
     /// </summary>
     /// <param name="key2"></param>
-    /// <returns></returns>
     public string TextFromRLData(string pathOrExt, string key2)
     {
         var ext = FS.GetExtension(pathOrExt);
@@ -194,7 +191,6 @@ public class XlfEngine
     /// </summary>
     /// <param name="pascal"></param>
     /// <param name="insertToClipboard"></param>
-    /// <returns></returns>
     public bool IsAlreadyContainedInXlfKeys(string pascal, bool insertToClipboard)
     {
         int first = -1;
@@ -239,4 +235,3 @@ public class XlfEngine
     }
     #endregion
 }
-
