@@ -178,7 +178,7 @@ public class XlfEngine
         {
             return "su.en(\"" + key2 + "\")";
         }
-        ThrowExceptions.NotImplementedCase(type, RH.CallingMethod(), ext);
+        ThrowExceptions.NotImplementedCase(Exc.GetStackTrace(),type, Exc.CallingMethod(), ext);
         return null;
     }
 
