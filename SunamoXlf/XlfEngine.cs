@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -18,7 +18,7 @@ public class XlfEngine
     static Type type = typeof(XlfEngine);
 
     #region Variables
-     Dictionary<Langs, string> filesWithTranslation = new Dictionary<Langs, string>();
+    Dictionary<Langs, string> filesWithTranslation = new Dictionary<Langs, string>();
     public Langs l = Langs.cs;
     public bool requireUserDecision = false;
     /// <summary>
@@ -43,8 +43,6 @@ public class XlfEngine
     {
         pathXlfKeys = FS.Combine(DefaultPaths.sunamo, @"sunamo\Constants\XlfKeys.cs");
         basePathXlf = FS.Combine(DefaultPaths.sunamo, "sunamo");
-
-        
     }
 
     /// <summary>
@@ -58,7 +56,7 @@ public class XlfEngine
         var files = FS.GetFiles(path, "*.xlf", System.IO.SearchOption.TopDirectoryOnly);
         foreach (var item in files)
         {
-            Langs l2 = XmlLocalisationInterchangeFileFormat.GetLangFromFilename(item);
+            Langs l2 = XmlLocalisationInterchangeFileFormatSunamo.GetLangFromFilename(item);
             if (!filesWithTranslation.ContainsKey(l2))
             {
                 filesWithTranslation.Add(l2, item);
@@ -95,10 +93,6 @@ public class XlfEngine
     }
     #endregion
 
-    #region Other handlers
-    
-    #endregion
-
     #region Work with consts in XlfKeys
     /// <summary>
     /// Add to XlfKeys.cs from xlf
@@ -114,16 +108,9 @@ public class XlfEngine
         var keys = GetConsts(out first, out lines);
 
         var both = CA.CompareList(keys, keysAll);
-        CSharpGenerator csg = new CSharpGenerator();
-
-        foreach (var item in keysAll)
-        {
-            AddConst(csg, item);
-        }
-        lines.Insert(first, csg.ToString());
-
-        TF.SaveLines(lines, pathXlfKeys);
+        AddKeysConsts(keysAll, first, lines);
     }
+
 
     /// <summary>
     /// Add c# const code
@@ -139,7 +126,7 @@ public class XlfEngine
     /// Get consts which exists in XlfKeys.cs
     /// </summary>
     /// <param name="first"></param>
-    List<string> GetConsts(out int first)
+    public List<string> GetConsts(out int first)
     {
         List<string> lines = null;
         return GetConsts(out first, out lines);
@@ -150,7 +137,7 @@ public class XlfEngine
     /// </summary>
     /// <param name="first"></param>
     /// <param name="lines"></param>
-    List<string> GetConsts(out int first, out List<string> lines)
+    public List<string> GetConsts(out int first, out List<string> lines)
     {
         first = -1;
 
@@ -161,30 +148,78 @@ public class XlfEngine
     }
     #endregion
 
-    #region Methods
-    /// <summary>
-    /// return code for getting from RLData.en
-    /// </summary>
-    /// <param name="key2"></param>
-    public string TextFromRLData(string pathOrExt, string key2)
+    public void AddKeysConsts(List<string> keysAll, int first, List<string> lines)
     {
-        var ext = FS.GetExtension(pathOrExt);
-        ext = SH.PrefixIfNotStartedWith( ext, ".");
-        if (ext == AllExtensions.cs)
+        CSharpGenerator csg = new CSharpGenerator();
+
+        string append = string.Empty;
+
+        foreach (var item in keysAll)
         {
-            return "RLData.en[XlfKeys." + key2 + "]";
+            
+            if (XmlLocalisationInterchangeFileFormat.IsToBeInXlfKeys(item))
+            {
+                append = string.Empty;
+                if (char.IsDigit(item[0]))
+                {
+                    append = "_";
+                }
+
+                AddConst(csg, append + item);
+            }
         }
-        else if (ext == AllExtensions.ts)
-        {
-            return "su.en(\"" + key2 + "\")";
-        }
-        ThrowExceptions.NotImplementedCase(Exc.GetStackTrace(),type, Exc.CallingMethod(), ext);
-        return null;
+
+        lines.Insert(first, csg.ToString());
+
+        TF.SaveLines(lines, pathXlfKeys);
     }
 
-    
+
+    public  void RemoveFromXlfKeysWhichIsNotInXlfFile()
+    {
+        
+        var path = XlfResourcesH.PathToXlfSunamo(Langs.en);
+
+
+
+        var allids = XmlLocalisationInterchangeFileFormat.GetIds(path);
+
+           CA.ChangeContent(allids, d2 => "public const string "+d2+" = \"" + d2 + "\";");
+
+        var dxs2 = CA.ReturnWhichContainsIndexes(allids, CA.ToList<string>("\"Page\""));
+        int s2 = 0;
+
+        List<string> b;
+        int a;
+        XlfEngine.Instance.GetConsts(out a, out b);
+
+        var b2 = b.ToList();
+        CA.RemoveStringsEmpty2(b2);
+        CA.Trim(b2);
+
+        var dxs = CA.ReturnWhichContainsIndexes(b2, CA.ToList<string>("\"Page\""));
+        int s = 0;
+
+        var both = CA.CompareList(b2, allids);
+
+        var mc = CA.ToList<string>("\"Page\"");
+
+        var b1 = CA.ReturnWhichContainsIndexes(both, mc);
+        var b4 = CA.ReturnWhichContainsIndexes(b2, mc);
+        var b3 = CA.ReturnWhichContainsIndexes(allids, mc);
+
+        CA.ChangeContent(allids, d4 => SH.GetTextBetween(d4, "const string ", " = \"", false));
+
+        CSharpParser.RemoveConsts(XlfEngine.Instance.pathXlfKeys, b);
+
+        AddKeysConsts(allids, a, b);
+    }
+
+    #region Methods
+
 
     /// <summary>
+    /// Must be here coz use GetConsts - works with XlfKeys ant XlfEngine is only one class which can
     /// Return whether A1 is in XlfKeys
     /// if A2, save A1 to clipboard
     /// Externally called from InsertIntoXlfAndConstantCsUC.ClipboardMonitor_OnClipboardContentChanged
@@ -209,6 +244,12 @@ public class XlfEngine
         return false;
     }
 
+    /// <summary>
+    /// Must be in XlfEngine coz use XlfDocument which is not imported in SunamoCode
+    /// </summary>
+    /// <param name="from"></param>
+    /// <param name="to"></param>
+    /// <param name="l"></param>
     public void MergeWithAnotherXlf(string from, string to, Langs l)
     {
         var fileIdAlreadyExistsInXlf = AppData.ci.GetFile(AppFolders.Data, "AlreadyExistsInSunamoXlf_" + l + ".txt");
