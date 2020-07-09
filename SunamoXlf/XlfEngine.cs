@@ -13,7 +13,7 @@ using XliffParser;
 /// Manage multilanguage strings in *.xlf files 
 /// Specific methods for working with Xlf from InsertIntoXlfAndConstantCsUC
 /// </summary>
-public class XlfEngine
+public class XlfEngine : ConstsManager
 {
     static Type type = typeof(XlfEngine);
 
@@ -25,10 +25,7 @@ public class XlfEngine
     /// Path to sunamo project (not solution)
     /// </summary>
     readonly string basePathXlf = null;
-    /// <summary>
-    /// XlfKeys.cs
-    /// </summary>
-    public readonly string pathXlfKeys = null;
+    
     public static XlfEngine Instance = new XlfEngine();
     public const string CopyWhileMassAddingNameFolder = "CopyWhileMassAdding";
     public bool waitingForUserDecision = false;
@@ -39,10 +36,98 @@ public class XlfEngine
     #endregion
 
     #region Init
-    private XlfEngine()
+    private XlfEngine() : base(FS.Combine(DefaultPaths.sunamo, @"sunamo\Constants\XlfKeys.cs"), XmlLocalisationInterchangeFileFormat.IsToBeInXlfKeys)
     {
-        pathXlfKeys = FS.Combine(DefaultPaths.sunamo, @"sunamo\Constants\XlfKeys.cs");
         basePathXlf = FS.Combine(DefaultPaths.sunamo, "sunamo");
+    }
+
+    public void GenerateEnumFromXlfKeys()
+    {
+        var keys = XlfEngine.Instance.GetConsts();
+        CSharpGenerator csg = new CSharpGenerator();
+        List<EnumItem> ei = new List<EnumItem>();
+        int id = 1;
+        foreach (var item in keys)
+        {
+            ei.Add(new EnumItem { Name = item });
+            id *= 2;
+        }
+        csg.Enum(0, AccessModifiers.Public, "KeysXlf", ei);
+
+        var content = csg.ToString();
+        TF.SaveFile(content, DefaultPaths.KeysXlf);
+
+        //ClipboardHelper.SetText(content);
+    }
+
+    /// <summary>
+    /// With never convention is always saving to target trimmed all non digits/letters
+    /// </summary>
+    /// <param name="p"></param>
+    /// <returns></returns>
+    public string ToPascalConvention(string p)
+    {
+        return ConvertPascalConventionWithNumbers.ToConvention(p).TrimStart(AllChars.numericChars.ToArray());
+
+        StringBuilder sb = new StringBuilder();
+        bool dalsiVelke = false;
+        foreach (char item in p)
+        {
+            if (char.IsLetterOrDigit(item))
+            {
+                if (dalsiVelke)
+                {
+                    if (char.IsUpper(item))
+                    {
+                        dalsiVelke = false;
+                        sb.Append(item);
+                        continue;
+                    }
+                    else if (char.IsLower(item))
+                    {
+                        dalsiVelke = false;
+                        sb.Append(char.ToUpper(item));
+                        continue;
+                    }
+
+                    else
+                    {
+                        //is number
+                        dalsiVelke = false;
+                        sb.Append(item);
+                        continue;
+                    }
+                }
+                else
+                {
+                    sb.Append(item);
+                }
+                //if (char.IsUpper(item))
+                //{
+                //    sb.Append(item);
+                //}
+                //else if (char.IsLower(item))
+                //{
+                //    sb.Append(item);
+                //}
+                //else
+                //{
+                //    dalsiVelke = true;
+                //}
+            }
+            else if (AllLists.htmlEntitiesFullNames.ContainsKey(item.ToString()))
+            {
+                sb.Append(AllStrings.lowbar + AllLists.htmlEntitiesFullNames[item.ToString()]);
+                dalsiVelke = true;
+            }
+            else
+            {
+                //Space etc. - dont add
+                //sb.Append(item);
+                dalsiVelke = true;
+            }
+        }
+        return sb.ToString();
     }
 
     /// <summary>
@@ -56,6 +141,11 @@ public class XlfEngine
         var files = FS.GetFiles(path, "*.xlf", System.IO.SearchOption.TopDirectoryOnly);
         foreach (var item in files)
         {
+            if (item.Contains("min"))
+            {
+                continue;
+            }
+
             Langs l2 = XmlLocalisationInterchangeFileFormatSunamo.GetLangFromFilename(item);
             if (!filesWithTranslation.ContainsKey(l2))
             {
@@ -73,9 +163,9 @@ public class XlfEngine
     public CollectionWithoutDuplicates<string> cs = null;
 
     #region Add
-    public void AddCzech(string englishText, string key)
+    public void AddCzech(string czechText, string key)
     {
-        XmlLocalisationInterchangeFileFormat.Append(string.Empty, englishText, key, GetFile(Langs.cs));
+        XmlLocalisationInterchangeFileFormat.Append(string.Empty, czechText, key, GetFile(Langs.cs));
     }
 
     public string GetFile(Langs cs)
@@ -87,133 +177,80 @@ public class XlfEngine
         return filesWithTranslation[cs];
     }
 
+    public string AddEnglish(string englishText)
+    {
+        var key = XlfEngine.Instance.ToPascalConvention(englishText);
+        AddEnglish(englishText, key);
+        return key;
+    }
+
     public void AddEnglish( string englishText, string key)
     {
         XmlLocalisationInterchangeFileFormat.Append(string.Empty, englishText, key, GetFile(Langs.en));
     }
     #endregion
 
-    #region Work with consts in XlfKeys
-    /// <summary>
-    /// Add to XlfKeys.cs from xlf
-    /// Must manually call XlfResourcesH.SaveResouresToRL(DefaultPaths.sunamoProject) before
-    /// called externally from MiAddTranslationWhichIsntInKeys_Click
-    /// </summary>
-    /// <param name="keysAll"></param>
-    public void AddConsts(List<string> keysAll)
+    public void AddConstsWhichIsNotInXlfKeys(string v)
     {
-        int first = -1;
+        var d = XmlLocalisationInterchangeFileFormat.GetTransUnits(v);
+        d.FillIds();
 
-        List<string> lines = null;
-        var keys = GetConsts(out first, out lines);
+        int first;
+        var consts = XlfEngine.Instance.GetConsts(out first);
 
-        var both = CA.CompareList(keys, keysAll);
-        AddKeysConsts(keysAll, first, lines);
-    }
+        List<string> toAdd = new List<string>();
 
-
-    /// <summary>
-    /// Add c# const code
-    /// </summary>
-    /// <param name="csg"></param>
-    /// <param name="item"></param>
-    private static void AddConst(CSharpGenerator csg, string item)
-    {
-        csg.Field(1, AccessModifiers.Public, true, VariableModifiers.Mapped, "string", item, true, item);
-    }
-
-    /// <summary>
-    /// Get consts which exists in XlfKeys.cs
-    /// </summary>
-    /// <param name="first"></param>
-    public List<string> GetConsts(out int first)
-    {
-        List<string> lines = null;
-        return GetConsts(out first, out lines);
-    }
-
-    /// <summary>
-    /// Get consts which exists in XlfKeys.cs
-    /// </summary>
-    /// <param name="first"></param>
-    /// <param name="lines"></param>
-    public List<string> GetConsts(out int first, out List<string> lines)
-    {
-        first = -1;
-
-        lines = TF.ReadAllLines(pathXlfKeys);
-
-        var keys = CSharpParser.ParseConsts(lines, out first);
-        return keys;
-    }
-    #endregion
-
-    public void AddKeysConsts(List<string> keysAll, int first, List<string> lines)
-    {
-        CSharpGenerator csg = new CSharpGenerator();
-
-        string append = string.Empty;
-
-        foreach (var item in keysAll)
+        foreach (var item in  d.allids)
         {
-            
-            if (XmlLocalisationInterchangeFileFormat.IsToBeInXlfKeys(item))
+            if (!consts.Contains(item))
             {
-                append = string.Empty;
-                if (char.IsDigit(item[0]))
-                {
-                    append = "_";
-                }
-
-                AddConst(csg, append + item);
+                toAdd.Add(item);
             }
         }
 
-        lines.Insert(first, csg.ToString());
-
-        TF.SaveLines(lines, pathXlfKeys);
+        XlfEngine.Instance.AddConsts(toAdd);
     }
 
+    public const string d = "YouCameToThisPageBecauseYouTriedToLoadThePageOrToPerformAnotherOperationThatYouDoNotHavePermissionToDoOrThatIsNotApplicableInThisContext";
 
-    public  void RemoveFromXlfKeysWhichIsNotInXlfFile()
+    /// <summary>
+    /// NotFoundInDB
+    /// </summary>
+    public void RemoveFromXlfKeysWhichIsNotInXlfFile()
     {
         
-        var path = XlfResourcesH.PathToXlfSunamo(Langs.en);
 
-
+    var path = XlfResourcesH.PathToXlfSunamo(Langs.en);
 
         var allids = XmlLocalisationInterchangeFileFormat.GetIds(path);
 
-           CA.ChangeContent(allids, d2 => "public const string "+d2+" = \"" + d2 + "\";");
+        CA.ChangeContent(null,allids, d2 => "public const string " + d2 + " = \"" + d2 + "\";");
 
-        var dxs2 = CA.ReturnWhichContainsIndexes(allids, CA.ToList<string>("\"Page\""));
-        int s2 = 0;
+        CSharpHelper.ReplaceForConsts(XlfEngine.Instance.pathXlfKeys);
 
         List<string> b;
-        int a;
-        XlfEngine.Instance.GetConsts(out a, out b);
+        int first;
+        XlfEngine.Instance.GetConsts(out first, out b);
+
+        var dx1 = b.IndexOf(d);
 
         var b2 = b.ToList();
         CA.RemoveStringsEmpty2(b2);
         CA.Trim(b2);
 
-        var dxs = CA.ReturnWhichContainsIndexes(b2, CA.ToList<string>("\"Page\""));
-        int s = 0;
-
+        var dx = b2.IndexOf(d);
+       
         var both = CA.CompareList(b2, allids);
 
-        var mc = CA.ToList<string>("\"Page\"");
+        CA.ChangeContent(null,allids, d4 => XmlLocalisationInterchangeFileFormatSunamo.GetConstsFromLine(d4));
+        CA.ChangeContent(new ChangeContentArgs { removeNull = true },b2, d4 => XmlLocalisationInterchangeFileFormatSunamo.GetConstsFromLine(d4));
 
-        var b1 = CA.ReturnWhichContainsIndexes(both, mc);
-        var b4 = CA.ReturnWhichContainsIndexes(b2, mc);
-        var b3 = CA.ReturnWhichContainsIndexes(allids, mc);
+        CSharpParser.RemoveConsts(XlfEngine.Instance.pathXlfKeys, b2);
 
-        CA.ChangeContent(allids, d4 => SH.GetTextBetween(d4, "const string ", " = \"", false));
-
-        CSharpParser.RemoveConsts(XlfEngine.Instance.pathXlfKeys, b);
-
-        AddKeysConsts(allids, a, b);
+        AddKeysConsts(allids, first, b);
     }
+
+    
 
     #region Methods
 
