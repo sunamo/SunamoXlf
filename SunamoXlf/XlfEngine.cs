@@ -115,9 +115,9 @@ public class XlfEngine : ConstsManager
                 //    dalsiVelke = true;
                 //}
             }
-            else if (AllLists.htmlEntitiesFullNames.ContainsKey(item.ToString()))
+            else if (AllLists.htmlEntitiesFullNames._d1.ContainsKey(item.ToString()))
             {
-                sb.Append(AllStrings.lowbar + AllLists.htmlEntitiesFullNames[item.ToString()]);
+                sb.Append(AllStrings.lowbar + AllLists.htmlEntitiesFullNames._d1[item.ToString()]);
                 dalsiVelke = true;
             }
             else
