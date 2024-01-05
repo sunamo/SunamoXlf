@@ -1,18 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>24.1.5.3</Version>
   </PropertyGroup>
-  <ItemGroup>
-    <Content Include="WinSec\Readme.txt">
-    </Content>
-  </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0">
     </PackageReference>
-    <PackageReference Include="SunamoShared" Version="23.11.26.1" />
-    <PackageReference Include="SunamoXliffParser" Version="1.0.0" />
+    <PackageReference Include="SunamoLang" Version="24.1.5.1" />
+    <PackageReference Include="SunamoXliffParser" Version="24.1.1.1" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0">
     </PackageReference>
     <PackageReference Include="System.Memory" Version="4.5.5" />

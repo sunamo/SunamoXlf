@@ -1,3 +1,7 @@
+using SunamoXlf._sunamo;
+
+namespace SunamoXlf;
+
 /// <summary>
 /// For using in content template etc
 /// </summary>

@@ -1,3 +1,5 @@
+namespace SunamoXlf;
+
 public partial class DefaultPaths
 {
     public const string eVs2 = @"E:\vs2\";

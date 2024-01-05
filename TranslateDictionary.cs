@@ -1,3 +1,7 @@
+using SunamoExceptions.OnlyInSE;
+
+namespace SunamoXlf;
+
 public class TranslateDictionary : IDictionary<string, string>
 {
     private static Type type = typeof(TranslateDictionary);
@@ -31,7 +35,7 @@ public class TranslateDictionary : IDictionary<string, string>
     }
 
     public static bool returnXlfKey = false;
-        public static LocalizationLanguages localizationLanguages = null;
+    public static LocalizationLanguages localizationLanguages = null;
 
     public string this[string key]
     {

@@ -1,3 +1,8 @@
+using SunamoExceptions.OnlyInSE;
+
+
+namespace SunamoXlf;
+
 /// <summary>
 /// Must be in shared
 /// In sunamo is not XliffParser and fmdev.ResX - these projects requires .net fw due to CodeDom
@@ -90,7 +95,7 @@ public partial class XlfResourcesH
 
         var path = Path.Combine(basePath, "MultilingualResources");
 
-        
+
 
         //throw new System.Exception("jinak");
 

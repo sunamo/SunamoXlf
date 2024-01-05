@@ -1,7 +1,12 @@
+using SunamoExceptions.OnlyInSE;
+
+namespace SunamoXlf;
+
 //public class BasePathsHelperXlf
 //{
 //    public static string vs = null;
 //}
+
 
 public class BasePathsHelper
 {

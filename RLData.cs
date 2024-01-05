@@ -1,3 +1,5 @@
+namespace SunamoXlf;
+
 /// <summary>
 /// Is here dont mix RL and RLData with intellisense
 /// </summary>

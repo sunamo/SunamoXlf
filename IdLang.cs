@@ -1,3 +1,5 @@
+namespace SunamoXlf;
+
 public class IdLang
 {
     public const byte cs = 0;

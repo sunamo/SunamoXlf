@@ -1,4 +1,4 @@
-namespace sunamo.Data;
+namespace SunamoXlf.Data;
 
 public class LocalizationLanguages
 {
