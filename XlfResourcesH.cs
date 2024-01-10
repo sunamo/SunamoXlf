@@ -1,6 +1,5 @@
 using SunamoExceptions.OnlyInSE;
 
-
 namespace SunamoXlf;
 
 /// <summary>

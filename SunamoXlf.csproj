@@ -1,15 +1,17 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>Library</OutputType>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <Version>24.1.5.3</Version>
+    <Version>24.1.7.4</Version>
+	  <Description>Localization for client apps. Another is SunamoI18N. Maybe will be merged in future.</Description>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0">
     </PackageReference>
-    <PackageReference Include="SunamoLang" Version="24.1.5.1" />
-    <PackageReference Include="SunamoXliffParser" Version="24.1.1.1" />
+    <PackageReference Include="SunamoExceptions" Version="24.1.5.1" />
+    <PackageReference Include="SunamoLang" Version="24.1.9.1" />
+    <PackageReference Include="SunamoXliffParser" Version="24.1.9.1" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0">
     </PackageReference>
     <PackageReference Include="System.Memory" Version="4.5.5" />

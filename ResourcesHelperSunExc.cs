@@ -1,4 +1,4 @@
-namespace SunamoXlf._sunamo;
+namespace SunamoXlf;
 
 /// <summary>
 /// Load from files *.resources and *.resx. Nothing else
@@ -6,7 +6,7 @@ namespace SunamoXlf._sunamo;
 ///
 /// When change joined file, change of content will be update also in *.resx
 /// </summary>
-internal class ResourcesHelper
+public class ResourcesHelper
 {
     #region For easy copy
     private ResourceManager _rm = null;
@@ -20,7 +20,7 @@ internal class ResourcesHelper
     /// MyApp.MyResource.en-US.resx is MyApp.MyResource
     /// </summary>
     /// <param name="executingAssembly"></param>
-    internal static ResourcesHelper Create(string resourceClass, Assembly sunamoAssembly)
+    public static ResourcesHelper Create(string resourceClass, Assembly sunamoAssembly)
     {
         ResourcesHelper resourcesHelper = new ResourcesHelper();
         resourcesHelper._rm = new ResourceManager(resourceClass, sunamoAssembly);
@@ -28,12 +28,12 @@ internal class ResourcesHelper
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    internal string GetString(string name)
+    public string GetString(string name)
     {
         return _rm.GetString(name);
     }
 
-    internal string GetByteArrayAsString(string name)
+    public string GetByteArrayAsString(string name)
     {
         var ba = _rm.GetObject(name);
         //var ab = FS.StreamToArrayBytes((Stream)ba);

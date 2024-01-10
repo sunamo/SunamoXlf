@@ -1,16 +1,16 @@
 using SunamoExceptions.InSunamoIsDerivedFrom;
 
-namespace SunamoXlf._sunamo;
+namespace SunamoXlf;
 
 /// <summary>
 ///
 /// </summary>
-internal partial class TFSunExcXlf
+public partial class TFSunExcXlf
 {
     #region For easy copy
-    internal static List<byte> bomUtf8 = new List<byte> { 239, 187, 191 };
+    public static List<byte> bomUtf8 = new List<byte> { 239, 187, 191 };
 
-    internal static
+    public static
 #if ASYNC
     async Task
 #else
@@ -34,14 +34,14 @@ TFSE.ReadAllBytes(path);
         }
 
         b = b.Skip(3).ToList();
-        TFSunExcXlf.WriteAllBytes(path, b);
+        WriteAllBytes(path, b);
     }
 
 
     #endregion
 
     #region Only in *Xlf.cs
-    internal static void WriteAllBytes(string file, List<byte> b)
+    public static void WriteAllBytes(string file, List<byte> b)
     {
         TFSE.WriteAllBytes(file, b);
     }

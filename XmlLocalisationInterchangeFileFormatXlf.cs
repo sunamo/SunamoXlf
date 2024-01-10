@@ -1,15 +1,16 @@
+using SunamoExceptions;
 using SunamoValues;
 
-namespace SunamoXlf._sunamo;
+namespace SunamoXlf;
 
-internal class XmlLocalisationInterchangeFileFormatXlf
+public class XmlLocalisationInterchangeFileFormatXlf
 {
     #region Only in *Xlf.cs
     /// <summary>
     /// A1 can be full path
     /// </summary>
     /// <param name="s"></param>
-    internal static Langs GetLangFromFilename(string s)
+    public static Langs GetLangFromFilename(string s)
     {
         s = Path.GetFileNameWithoutExtension(s);
         List<string> parts = null;

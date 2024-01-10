@@ -1,4 +1,4 @@
-﻿global using SunamoExceptions;
+﻿
 global using SunamoLang;
 global using SunamoXlf.Data;
 global using SunamoXlf.Enums;

@@ -30,13 +30,13 @@ public partial class DefaultPaths
     /// For all is here sczRootPath
     /// edn with bs
     /// </summary>
-    public static string sczPath = Path.Combine(actualPlatform, @"Projects\sunamo.cz\sunamo.cz\");
-    public static string sczOldPath = Path.Combine(actualPlatform, @"Projects\sunamo.cz\sunamo.cz-old\");
-    public static string sczNsnPath = Path.Combine(actualPlatform, @"Projects\sunamo.cz\sunamo.cz-nsn\");
+    public static string sczPath = Path.Combine(actualPlatform, @"Projects\sunamoWithoutLocalDep.cz\sunamo.cz\");
+    public static string sczOldPath = Path.Combine(actualPlatform, @"Projects\sunamoWithoutLocalDep.cz\sunamo.cz-old\");
+    public static string sczNsnPath = Path.Combine(actualPlatform, @"Projects\sunamoWithoutLocalDep.cz\sunamo.cz-nsn\");
     /// <summary>
     /// Ended with backslash
     /// </summary>
-    public static string sczRootPath = Path.Combine(actualPlatform, @"Projects\sunamo.cz\");
+    public static string sczRootPath = Path.Combine(actualPlatform, @"Projects\sunamoWithoutLocalDep.cz\");
     public const string ProjectsFolderNameSlash = "Projects\\";
 
     #region vs
@@ -55,12 +55,12 @@ public partial class DefaultPaths
     {
         bp = actualPlatform;
 
-        sunamo = bp + @"Projects\sunamo\";
-        sunamoProject = bp + @"Projects\sunamo\sunamo\";
+        sunamo = bp + @"Projects\sunamoWithoutLocalDep\";
+        sunamoProject = bp + @"Projects\sunamoWithoutLocalDep\sunamo\";
         vsProjects = bp + @"Projects\";
         vs = bp + @"Projects\";
-        KeysXlf = bp + @"Projects\sunamo\sunamo\Enums\KeysXlf.cs";
-        DllSunamo = bp + @"Projects\sunamo\dll\";
+        KeysXlf = bp + @"Projects\sunamoWithoutLocalDep\sunamo\Enums\KeysXlf.cs";
+        DllSunamo = bp + @"Projects\sunamoWithoutLocalDep\dll\";
         VisualStudio2017 = bp;
         VisualStudio2017WoSlash = bp.Substring(0, bp.Length - 1);
 
@@ -161,12 +161,12 @@ public partial class DefaultPaths
     //        bp = bpQ;
     //    }
 
-    //    sunamo = bp + @"Projects\sunamo\";
-    //    sunamoProject = bp + @"Projects\sunamo\sunamo\";
+    //    sunamo = bp + @"Projects\sunamoWithoutLocalDep\";
+    //    sunamoProject = bp + @"Projects\sunamoWithoutLocalDep\sunamo\";
     //    vsProjects = bp + @"Projects\";
     //    vs = bp + @"Projects\";
-    //    KeysXlf = bp + @"Projects\sunamo\sunamo\Enums\KeysXlf.cs";
-    //    DllSunamo = bp + @"Projects\sunamo\dll\";
+    //    KeysXlf = bp + @"Projects\sunamoWithoutLocalDep\sunamo\Enums\KeysXlf.cs";
+    //    DllSunamo = bp + @"Projects\sunamoWithoutLocalDep\dll\";
     //    VisualStudio2017 = bp;
     //    VisualStudio2017WoSlash = bp.Substring(0, bp.Length - 1);
 
