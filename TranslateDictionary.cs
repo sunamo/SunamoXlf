@@ -1,5 +1,3 @@
-using SunamoExceptions.OnlyInSE;
-
 namespace SunamoXlf;
 
 public class TranslateDictionary : IDictionary<string, string>

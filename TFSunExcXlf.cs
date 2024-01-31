@@ -1,5 +1,3 @@
-using SunamoExceptions.InSunamoIsDerivedFrom;
-
 namespace SunamoXlf;
 
 /// <summary>

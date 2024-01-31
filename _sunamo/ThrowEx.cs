@@ -5,14 +5,14 @@
 //using System.Threading.Tasks;
 
 //namespace SunamoXlf._sunamo;
-//internal class ThrowEx
+//public class ThrowEx
 //{
-//    internal static void Custom(string v)
+//    public static void Custom(string v)
 //    {
 //        throw new NotImplementedException();
 //    }
 
-//    internal static void NotImplementedMethod()
+//    public static void NotImplementedMethod()
 //    {
 //        throw new NotImplementedException();
 //    }
